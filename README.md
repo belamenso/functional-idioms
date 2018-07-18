@@ -72,7 +72,8 @@ procedure.
 ```racket
 (define (id x) x)
 
-;; creates a prepender, which, when called, concatenated lists 
+;; creates a prepender that prepends a list you passed to the constructor
+;; to the list passed to a prepender
 (define (make-prepender lst)
   (if (null? lst)
       id
