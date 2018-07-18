@@ -97,6 +97,7 @@ procedure.
     (if (eq? k key)
         value
         (env k))))
+        
 (define env (extend-env 'a 10
                         (extend-env 'b 20
                                     (empty-env))))
