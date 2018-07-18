@@ -91,7 +91,7 @@ procedure.
 (define (empty-env)
   (λ (key)
     (error "No such key:" key)))
-;; extending an enviroment is a matter oh handling only one additional case
+;; extending an enviroment is a matter of handling only one additional case
 (define (extend-env key value env)
   (λ (k)
     (if (eq? k key)
