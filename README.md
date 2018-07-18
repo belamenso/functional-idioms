@@ -63,6 +63,47 @@ val ts : token list =
 - : int = 8
 ```
 
+## Generators
+In functional programming, functions are treated as black boxes and we cannot see
+inside them or change their contents. We can, however, "edit" a function by wrapping
+it in a lambda that will handle the new behavior and leave the rest to the original
+procedure.
+
+```racket
+(define (id x) x)
+
+;; creates a prepender, which, when called, concatenated lists 
+(define (make-prepender lst)
+  (if (null? lst)
+      id
+      (λ (l)
+        (cons (car lst)
+              ((make-prepender (cdr lst))
+               l)))))
+
+(define p (make-prepender '(a b c)))
+(p (range 1 6)) ; '(a b c 1 2 3 4 5)
+```
+
+```racket
+;; empty environment has no keys in it
+(define (empty-env)
+  (λ (key)
+    (error "No such key:" key)))
+;; extending an enviroment is a matter oh handling only one additional case
+(define (extend-env key value env)
+  (λ (k)
+    (if (eq? k key)
+        value
+        (env k))))
+(define env (extend-env 'a 10
+                        (extend-env 'b 20
+                                    (empty-env))))
+(env 'a)    ; 10
+(env 'b)    ; 20
+(env 'name) ; error
+```
+
 ## Functional dispatch
 Many data structures can be implemented by hiding data in closures and returning functions operating on
 this data.
@@ -138,6 +179,5 @@ let is_even = is_even_h is_odd
 ## TODO
 * iterating with a helper function
 * pattern matching and simplifying problems
-* generators
 * continuations
 * simulating laziness
