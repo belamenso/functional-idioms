@@ -97,7 +97,7 @@ let is_even_h is_odd n = if n = 0
 let rec is_ odd n = if n = 0
                     then false
                     else is_even_h is_odd (n - 1)
-let is_even = is_even is_odd
+let is_even = is_even_h is_odd
 ```
 
 ## TODO
