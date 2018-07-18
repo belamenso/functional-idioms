@@ -28,6 +28,41 @@ version is cleaner. In some environments however it may be necessary to use accu
 such cases, because, for example, the call stack is stored in the stack, not in the heap, and therefore
 it can not grow too deep.
 
+## Relaying on recursion
+Recursive call doesn't need to be the last one (tail call). Using recursion earlier in
+a procedure can lead to beautiful, expressive code (although with space complexity of
+ϴ(n) beacuse of growing stack).
+
+Implementation of a parser and evaluator of a simple language, consisting only of constants and
+subtraction of two expressions:
+```ocaml
+exception Error of string;;
+
+type exp = Const of int | Diff of exp * exp;;
+type token = Num of int | Minus;;
+
+let rec parse_exp = function
+    | [] -> raise (Error "End of input")
+    | Num i :: tokens -> (Const i, tokens)
+    | Minus :: tokens -> let (exp1, tokens_left) = parse_exp tokens in
+                         let (exp2, tokens_left) = parse_exp tokens_left in
+                         (Diff (exp1, exp2), tokens_left)
+;;
+
+let rec eval = function
+    | Const i -> i
+    | Diff (exp1, exp2) -> (eval exp1) - (eval exp2)
+;;
+
+let ts = [Minus; Minus; Num 12; Num 2; Minus; Minus; Num 6; Num 1; Num 3];;
+let (exp, _) = parse_exp ts in eval exp;;
+```
+```ocaml
+val ts : token list =
+  [Minus; Minus; Num 12; Num 2; Minus; Minus; Num 6; Num 1; Num 3]
+- : int = 8
+```
+
 ## Functional dispatch
 Many data structures can be implemented by hiding data in closures and returning functions operating on
 this data.
@@ -102,7 +137,6 @@ let is_even = is_even_h is_odd
 
 ## TODO
 * iterating with a helper function
-* relaying on recursion - easily expressing non-trivial computations
 * pattern matching and simplifying problems
 * generators
 * continuations
