@@ -28,6 +28,36 @@ version is cleaner. In some environments however it may be necessary to use accu
 such cases, because, for example, the call stack is stored in the stack, not in the heap, and therefore
 it can not grow too deep.
 
+## Functional dispatch
+Many data structures can be implemented by hiding data in closures and returning functions operating on
+this data.
+```racket
+(define (cons head tail)
+  (define (dispatch msg)
+    (match msg
+      ['car head]
+      ['cdr tail]
+      [else (error "Unknown operation")]))
+  dispatch)
+(define (car pair) (pair 'car))
+(define (cdr pair) (pair 'cdr))
+```
+```racket
+(define (empty-set)
+  (define (make-set elements) ; assume that the list contains no duplicates
+    (λ (msg)
+      (match msg
+        ['member? (λ (x) (not (not (member x elements))))]
+        ['insert (λ (x) (make-set (if (member x elements)
+                                      elements
+                                      (cons x elements))))]
+        ['remove (λ (x) (make-set (remove x elements)))]
+        [else (error "Unknown operation")])))
+  (make-set '()))
+(define (set-member? s x) ((s 'member?) x))
+(define (set-insert s x) ((s 'insert) x))
+(define (set-remove s x) ((s 'remove) x))
+```
 
 ## TODO
 * iterating with a helper function
