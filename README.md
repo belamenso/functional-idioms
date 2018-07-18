@@ -59,11 +59,51 @@ this data.
 (define (set-remove s x) ((s 'remove) x))
 ```
 
+## Mutual recursion
+Mututal recursion can be helpful for breaking complex code apart.
+
+Implementation of a finite state machine only accepting gammar `(a b)* a`:
+
+```racket
+(define (need-a lst)
+  (cond
+    [(null? lst) #f]
+    [(eq? 'a (car lst)) (need-b (cdr lst))]
+    [else #f]))
+
+(define (need-b lst)
+  (cond
+    [(null? lst) #t]
+    [(eq? 'b (car lst)) (need-a (cdr lst))]
+    [else #f]))
+    
+(define accept need-a)
+```
+In some languages, like SML or OCaml, you cannot refer to a function that hasn't been defined yet
+(above in the file or imported) and have to use special syntax:
+```ocaml
+let is_even n = if n = 0
+                then true
+                else is_odd (n - 1)
+and is_odd n = if n = 0
+               then false
+               else is_even (n - 1)
+```
+However, you never need those special constructs.
+```ocaml
+let is_even_h is_odd n = if n = 0
+                         then true
+                         else is_odd (n - 1)
+let rec is_ odd n = if n = 0
+                    then false
+                    else is_even_h is_odd (n - 1)
+let is_even = is_even is_odd
+```
+
 ## TODO
 * iterating with a helper function
 * relaying on recursion - easily expressing non-trivial computations
 * pattern matching and simplifying problems
 * generators
 * continuations
-* mutual recursion
 * simulating laziness
