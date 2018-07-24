@@ -94,15 +94,15 @@ procedure.
 
 (define (prepender l)
   (let loop ([l l] [f id])
-  (match l
-    ['() f]
-    [(cons x xs) (loop xs (λ (l) (f (cons x l))))])))
+    (match l
+      ['() f]
+      [(cons x xs) (loop xs (λ (l) (f (cons x l))))])))
 
 (define (reverse-prepender l)
   (let loop ([l l] [f id])
-  (match l
-    ['() f]
-    [(cons x xs) (loop xs (λ (l) (cons x (f l))))])))
+    (match l
+      ['() f]
+      [(cons x xs) (loop xs (λ (l) (cons x (f l))))])))
 
 (define (rec-prepender l)
   (match l
