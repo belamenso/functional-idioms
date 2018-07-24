@@ -70,23 +70,6 @@ it in a lambda that will handle the new behavior and leave the rest to the origi
 procedure.
 
 ```racket
-(define (id x) x)
-
-;; creates a prepender that prepends a list you passed to the constructor
-;; to the list passed to a prepender
-(define (make-prepender lst)
-  (if (null? lst)
-      id
-      (λ (l)
-        (cons (car lst)
-              ((make-prepender (cdr lst))
-               l)))))
-
-(define p (make-prepender '(a b c)))
-(p (range 1 6)) ; '(a b c 1 2 3 4 5)
-```
-
-```racket
 ;; empty environment has no keys in it
 (define (empty-env)
   (λ (key)
@@ -104,6 +87,32 @@ procedure.
 (env 'a)    ; 10
 (env 'b)    ; 20
 (env 'name) ; error
+```
+
+```racket
+(define (id x) x)
+
+(define (prepender l)
+  (let loop ([l l] [f id])
+  (match l
+    ['() f]
+    [(cons x xs) (loop xs (λ (l) (f (cons x l))))])))
+
+(define (reverse-prepender l)
+  (let loop ([l l] [f id])
+  (match l
+    ['() f]
+    [(cons x xs) (loop xs (λ (l) (cons x (f l))))])))
+
+(define (rec-prepender l)
+  (match l
+    ['() id]
+    [(cons x xs) (λ (l) (cons x ((rec-prepender xs) l)))]))
+
+(define (rec-reverse-prepender l)
+  (match l
+    ['() id]
+    [(cons x xs) (λ (l) ((rec-reverse-prepender xs) (cons x l)))]))
 ```
 
 ## Functional dispatch
